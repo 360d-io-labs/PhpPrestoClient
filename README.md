@@ -11,6 +11,10 @@ Usage
 -----------------
 See Demo.php for a short demo on how to use it
 
+Requirement
+-----------------
+Php-Curl
+
 Presto client protocol
 ----------------------
 The following description was made by Ivo Herweijer for its Python interface
