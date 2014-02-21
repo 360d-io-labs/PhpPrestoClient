@@ -23,7 +23,7 @@ class PhpPrestoClient {
 	 * The following parameters may be modified depending on your configuration
 	 */
 	private $source = 'PhpPrestoClient';
-	private $version = '0.1';
+	private $version = '0.2';
 	private $maximumRetries = 5;
 	private $prestoUser = "presto";
 	private $prestoSchema = "default";
@@ -65,6 +65,7 @@ class PhpPrestoClient {
 	
 	function PrestoQuery($query){
 		
+		$this->data=array();
 		$this->userAgent = $this->source."/".$this->version;
 		
 		$this->request = $query;

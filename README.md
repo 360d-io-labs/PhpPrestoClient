@@ -4,7 +4,7 @@ PhpPrestoClient
 Simple Php Class to connect to a PrestoDB Server that runs distributed queries against 
 a Hadoop HDFS cluster.
 Presto uses a subset of SQL as its query language. Presto is an alternative for
-Hadoop-Hive.
+Hadoop-Hive or Impala.
 
 
 Usage
@@ -14,6 +14,10 @@ See Demo.php for a short demo on how to use it
 Requirement
 -----------------
 Php-Curl
+
+Compatibility
+-----------------
+Tested successfully with all version of Presto up to 0.58
 
 Presto client protocol
 ----------------------
