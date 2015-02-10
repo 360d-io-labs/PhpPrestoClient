@@ -1,0 +1,32 @@
+{
+  "name": "xtendsys-labs/php-presto-client",
+  "description": "PHP PrestoDB.io Client",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Xtendsys",
+      "email": "info@xtendsys.com"
+    },
+    {
+      "name": "Sebastian Lagemann",
+      "email": "sebastian@iqu.com"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/Degola/PhpPrestoClient.git"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.0",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Xtendsys\\": "src/"
+    }
+  }
+
+}
