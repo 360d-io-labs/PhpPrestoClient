@@ -17,8 +17,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+namespace Xtendsys;
 
-class PhpPrestoClient {
+require_once __DIR__ . '/PrestoException.php';
+
+class PrestoClient {
 	/**
 	 * The following parameters may be modified depending on your configuration
 	 */
@@ -44,61 +47,77 @@ class PhpPrestoClient {
 
 	public $HTTP_error;
 	public $data = array();
-	
-	/*Constructor
-	 * Arguments: 	- URL of connection
-	 * 				- Catalog
+
+
+	/**
+	 * Constructs the presto connection instance
+	 *
+	 * @param $connectUrl
+	 * @param $catalog
 	 */
-	function __construct($connectUrl,$catalog){
+	public function __construct($connectUrl,$catalog){
 		$this->url = $connectUrl;
 		$this->prestoCatalog = $catalog;
 	}
 	/**
 	 * Return Data as an array. Check that the current status is FINISHED
+	 *
+	 * @return array|false
 	 */
-	function GetData(){
+	public function GetData(){
 		if ($this->state!="FINISHED"){
 			return false;
 		}
 		return $this->data;
 	}
-	
-	function PrestoQuery($query){
+
+	/**
+	 * prepares the query
+	 *
+	 * @param $query
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function Query($query) {
 		
 		$this->data=array();
 		$this->userAgent = $this->source."/".$this->version;
 		
 		$this->request = $query;
 		//check that no other queries are already running for this object
-		if ($this->state=="RUNNING"){
-				return false;}
+		if ($this->state === "RUNNING") {
+			return false;
+		}
 
-		/**check that query is completed, and that we don't start 
+		/**
+		 * check that query is completed, and that we don't start
 		 * a new query before the previous is finished
 		 */
-		if ($query=""){
-			return false;}
+		if ($query="") {
+			return false;
+		}
 		
-		$this->headers = array("X-Presto-User:$this->prestoUser",
-						"X-Presto-Catalog:$this->prestoCatalog",
-						"X-Presto-Schema:$this->prestoSchema",
-						"User-Agent:$this->userAgent");
+		$this->headers = array(
+			"X-Presto-User: ".$this->prestoUser,
+			"X-Presto-Catalog: ".$this->prestoCatalog,
+			"X-Presto-Schema: ".$this->prestoSchema,
+			"User-Agent: ".$this->userAgent);
 		
-		$connect = curl_init();
-        curl_setopt($connect,CURLOPT_URL, $this->url);
-        curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
-        curl_setopt($connect,CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($connect,CURLOPT_POST, 1);
-        curl_setopt($connect,CURLOPT_POSTFIELDS, $this->request);
+		$connect = \curl_init();
+		\curl_setopt($connect,CURLOPT_URL, $this->url);
+		\curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
+		\curl_setopt($connect,CURLOPT_RETURNTRANSFER, 1);
+		\curl_setopt($connect,CURLOPT_POST, 1);
+		\curl_setopt($connect,CURLOPT_POSTFIELDS, $this->request);
 		
-		$this->result = curl_exec($connect);
+		$this->result = \curl_exec($connect);
 		
-		$httpCode = curl_getinfo($connect, CURLINFO_HTTP_CODE);
+		$httpCode = \curl_getinfo($connect, CURLINFO_HTTP_CODE);
 	
 		if($httpCode!="200"){
 			
 			$this->HTTP_error = $httpCode;
-			throw new Exception("HTTP ERRROR: $this->HTTP_error");
+			throw new PrestoException("HTTP ERRROR: $this->HTTP_error");
 		}
 		
 		//set status to RUNNING
@@ -106,9 +125,13 @@ class PhpPrestoClient {
 		$this->state = "RUNNING";
 		return true;	
 	}
-	
+
+
 	/**
-	 * 
+	 * waits until query was executed
+	 *
+	 * @return bool
+	 * @throws PrestoException
 	 */
 	function WaitQueryExec() {
 		
@@ -122,7 +145,7 @@ class PhpPrestoClient {
 		}
 		
 		if ($this->state!="FINISHED"){
-			throw new Exception("Incoherent State at end of query");}
+			throw new PrestoException("Incoherent State at end of query");}
 		
 		return true;
 		
@@ -132,14 +155,16 @@ class PhpPrestoClient {
 	 * Provide Information on the query execution
 	 * The server keeps the information for 15minutes
 	 * Return the raw JSON message for now
-	*/
+	 *
+	 * @return string
+	 */
 	function GetInfo() {
 		
-		$connect = curl_init();
-        curl_setopt($connect,CURLOPT_URL, $this->infoUri);
-        curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
-		$infoRequest = curl_exec($connect);
-		curl_close($connect);
+		$connect = \curl_init();
+        \curl_setopt($connect,CURLOPT_URL, $this->infoUri);
+        \curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
+		$infoRequest = \curl_exec($connect);
+		\curl_close($connect);
 		
 		return $infoRequest;
 	}
@@ -173,13 +198,13 @@ class PhpPrestoClient {
 		if (!isset($this->partialCancelUri)){
 			return false; 
 			
-		$connect = curl_init();
-        curl_setopt($connect,CURLOPT_URL, $this->partialCancelUri);
-        curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
-		$infoRequest = curl_exec($connect);
-		curl_close($connect);
+		$connect = \curl_init();
+		\curl_setopt($connect,CURLOPT_URL, $this->partialCancelUri);
+		\curl_setopt($connect,CURLOPT_HTTPHEADER, $this->headers);
+		$infoRequest = \curl_exec($connect);
+		\curl_close($connect);
 		
-		$httpCode = curl_getinfo($connect, CURLINFO_HTTP_CODE);
+		$httpCode = \curl_getinfo($connect, CURLINFO_HTTP_CODE);
 	
 		if($httpCode!="204"){
 			return false;}else{

@@ -14,22 +14,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.*/
 
+use \Xtendsys\PrestoClient;
+use \Xtendsys\PrestoException;
 
-require_once('PhpPrestoClient.php');
+require_once(__DIR__ . '/../src/PrestoClient.php');
 
 //Create a new connection object. Provide URL and catalog as parameters
-$presto = new PhpPrestoClient("http://10.2.7.1:8080/v1/statement","hive");
+$presto = new PrestoClient("http://localhost:8080/v1/statement","hive");
 
 //Prepare your sql request
 try {
-	$presto -> PrestoQuery("select * from hive.default.mytable");
-	} catch (Exception $e) {
-		return false;}
+	$presto->Query("select count(*) from hive.default.my_table");
+} catch (PrestoException $e) {
+	var_dump($e);
+}
 
 //Execute the request and build the result
 $presto->WaitQueryExec();
 
 //Get the result
-$answer=$presto->GetData();
+$answer = $presto->GetData();
+
+var_dump($answer);
 
 ?>
