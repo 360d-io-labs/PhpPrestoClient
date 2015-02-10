@@ -19,7 +19,7 @@ limitations under the License.*/
 
 namespace Xtendsys;
 
-require_once __DIR__.'/PrestoException.php';
+require_once __DIR__ . '/PrestoException.php';
 
 class PrestoClient {
 	/**

@@ -17,14 +17,14 @@ limitations under the License.*/
 use \Xtendsys\PrestoClient;
 use \Xtendsys\PrestoException;
 
-require_once(__DIR__.'/../src/Xtendsys/PrestoClient.php');
+require_once(__DIR__ . '/../src/PrestoClient.php');
 
 //Create a new connection object. Provide URL and catalog as parameters
-$presto = new PrestoClient("http://127.0.0.1:8080/v1/statement","hive");
+$presto = new PrestoClient("http://localhost:8080/v1/statement","hive");
 
 //Prepare your sql request
 try {
-	$presto->Query("select * from hive.default.mytable");
+	$presto->Query("select count(*) from hive.default.my_table");
 } catch (PrestoException $e) {
 	var_dump($e);
 }
