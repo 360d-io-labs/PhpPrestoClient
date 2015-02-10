@@ -2,7 +2,7 @@
   "name": "xtendsys-labs/php-presto-client",
   "description": "PHP PrestoDB.io Client",
   "minimum-stability": "stable",
-  "license": "proprietary",
+  "license": "Apache-2.0",
   "authors": [
     {
       "name": "Xtendsys",
